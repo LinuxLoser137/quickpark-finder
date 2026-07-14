@@ -1,5 +1,6 @@
 import os
-from flask import Flask
+from flask import Flask, redirect, url_for
+
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
@@ -14,6 +15,10 @@ def create_app(test_config=None):
         app.config.from_mapping(test_config)
 
     os.makedirs(app.instance_path, exist_ok=True)
+
+    @app.route('/')
+    def index():
+        return redirect(url_for('hello'))
 
     @app.route('/hello/')
     def hello():
