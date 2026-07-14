@@ -31,7 +31,9 @@ def test_register_and_login_flow(client):
     )
 
     assert response.status_code == 200
+    print("Registration returned HTTP 200")
     assert b"Log In" in response.data
+    print("Registration page rendered correctly")
 
     response = client.post(
         "/auth/login/",
@@ -40,4 +42,6 @@ def test_register_and_login_flow(client):
     )
 
     assert response.status_code == 200
+    print("Login returned HTTP 200")
     assert b"Hello, World!" in response.data
+    print("Login redirected to the expected page")
