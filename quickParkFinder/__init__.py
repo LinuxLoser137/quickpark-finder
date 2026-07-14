@@ -1,5 +1,5 @@
 import os
-from flask import Flask, redirect, url_for
+from flask import Flask, redirect, render_template, request, url_for
 
 
 def create_app(test_config=None):
@@ -23,6 +23,30 @@ def create_app(test_config=None):
     @app.route('/hello/')
     def hello():
         return 'Hello, World!'
+
+    @app.route('/parking/', methods=('GET', 'POST'))
+    def parking():
+        error = None
+        parking_record = None
+
+        if request.method == 'POST':
+            location = request.form.get('location', '').strip()
+            level = request.form.get('level', '').strip()
+            row = request.form.get('row', '').strip()
+            notes = request.form.get('notes', '').strip()
+
+            if not location:
+                error = 'Location is required.'
+            else:
+                parking_record = {
+                    'location': location,
+                    'level': level,
+                    'row': row,
+                    'notes': notes,
+                }
+                app.config.setdefault('parking_records', []).append(parking_record)
+
+        return render_template('parking.html', error=error, parking_record=parking_record)
 
     from . import db
     db.init_app(app)

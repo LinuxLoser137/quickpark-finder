@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Parking</title>
+</head>
+<body>
+    <h1>Parking Record</h1>
+    {% if error %}
+        <p>{{ error }}</p>
+    {% endif %}
+    <form method="post">
+        <label>Location</label>
+        <input name="location" value="{{ request.form.get('location', '') }}">
+        <label>Level</label>
+        <input name="level" value="{{ request.form.get('level', '') }}">
+        <label>Row</label>
+        <input name="row" value="{{ request.form.get('row', '') }}">
+        <label>Notes</label>
+        <textarea name="notes">{{ request.form.get('notes', '') }}</textarea>
+        <button type="submit">Save Parking</button>
+    </form>
+
+    {% if parking_record %}
+        <h2>Saved Parking</h2>
+        <p>Location: {{ parking_record['location'] }}</p>
+        <p>Level: {{ parking_record['level'] }}</p>
+        <p>Notes: {{ parking_record['notes'] }}</p>
+    {% endif %}
+</body>
+</html>
