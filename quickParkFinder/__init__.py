@@ -1,5 +1,7 @@
 import os
-from flask import Flask, redirect, render_template, request, url_for
+from flask import Flask, redirect, render_template, request, url_for, g
+from .db import get_db
+from .auth import login_required
 
 
 def create_app(test_config=None):
@@ -22,12 +24,14 @@ def create_app(test_config=None):
 
     @app.route('/hello/')
     def hello():
-        return 'Hello, World!'
+        return render_template('hello.html')
 
     @app.route('/parking/', methods=('GET', 'POST'))
+    @login_required
     def parking():
         error = None
         parking_record = None
+        db = get_db()
 
         if request.method == 'POST':
             location = request.form.get('location', '').strip()
@@ -38,16 +42,27 @@ def create_app(test_config=None):
             if not location:
                 error = 'Location is required.'
             else:
-                parking_record = {
-                    'location': location,
-                    'level': level,
-                    'row': row,
-                    'notes': notes,
-                }
-                app.config.setdefault('parking_records', []).append(parking_record)
+                db.execute(
+                    'INSERT INTO quickpark (user_id, location, level, row, notes)'
+                    ' VALUES (?, ?, ?, ?, ?)',
+                    (g.user['id'], location, level, row, notes)
+                )
+                db.commit()
+                parking_record = {'location': location, 'level': level, 'row': row, 'notes': notes}
 
         return render_template('parking.html', error=error, parking_record=parking_record)
 
+    
+    @app.route('/quickpark/')
+    @login_required
+    def quickpark_list():
+        db = get_db()
+        quickparks = db.execute(
+            'SELECT * FROM quickpark WHERE user_id = ? ORDER BY created DESC LIMIT 5',
+            (g.user['id'],)
+        ).fetchall()
+        return render_template('quickpark.html', quickparks=quickparks)
+    
     from . import db
     db.init_app(app)
 

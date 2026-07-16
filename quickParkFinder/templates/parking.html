@@ -1,31 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Parking</title>
-</head>
-<body>
-    <h1>Parking Record</h1>
+{% extends 'base.html' %}
+
+{% block header %}
+<h1>{% block title %}Parking{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
     {% if error %}
-        <p>{{ error }}</p>
+        <div class="flash">{{ error }}</div>
     {% endif %}
+
     <form method="post">
-        <label>Location</label>
-        <input name="location" value="{{ request.form.get('location', '') }}">
-        <label>Level</label>
-        <input name="level" value="{{ request.form.get('level', '') }}">
-        <label>Row</label>
-        <input name="row" value="{{ request.form.get('row', '') }}">
-        <label>Notes</label>
-        <textarea name="notes">{{ request.form.get('notes', '') }}</textarea>
-        <button type="submit">Save Parking</button>
+        <label for="location">Location</label>
+        <input name="location" id="location" value="{{ request.form.get('location', '') }}">
+        <label for="level">Level</label>
+        <input name="level" id="level" value="{{ request.form.get('level', '') }}">
+        <label for="row">Row</label>
+        <input name="row" id="row" value="{{ request.form.get('row', '') }}">
+        <label for="notes">Notes</label>
+        <textarea name="notes" id="notes">{{ request.form.get('notes', '') }}</textarea>
+        <input type="submit" value="Save Parking">
     </form>
 
     {% if parking_record %}
-        <h2>Saved Parking</h2>
-        <p>Location: {{ parking_record['location'] }}</p>
-        <p>Level: {{ parking_record['level'] }}</p>
-        <p>Notes: {{ parking_record['notes'] }}</p>
+        <div class="saved-parking">
+            <h2>Saved Parking</h2>
+            <p><strong>Location:</strong> {{ parking_record['location'] }}</p>
+            {% if parking_record['level'] %}<p><strong>Level:</strong> {{ parking_record['level'] }}</p>{% endif %}
+            {% if parking_record['row'] %}<p><strong>Row:</strong> {{ parking_record['row'] }}</p>{% endif %}
+            {% if parking_record['notes'] %}<p><strong>Notes:</strong> {{ parking_record['notes'] }}</p>{% endif %}
+        </div>
     {% endif %}
-</body>
-</html>
+{% endblock %}

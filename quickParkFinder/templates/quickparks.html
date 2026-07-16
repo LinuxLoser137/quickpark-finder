@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}My QuickParks{% endblock %}
+
+{% block header %}
+    <h1>My QuickParks</h1>
+{% endblock %}
+
+{% block content %}
+    {% if quickparks %}
+    <ul>
+        {% for qp in quickparks %}
+        <li>
+            <strong>{{ qp['location'] }}</strong>
+            {% if qp['level'] %} - Level {{ qp['level'] }}{% endif %}
+            {% if qp['row'] %} - Row {{ qp['row'] }}{% endif %}
+            {% if qp['notes'] %}<br>{{ qp['notes'] }}{% endif %}
+            <br><small>{{ qp['created'] }}</small>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>You don't have any saved QuickParks yet.</p>
+    {% endif %}
+{% endblock %}

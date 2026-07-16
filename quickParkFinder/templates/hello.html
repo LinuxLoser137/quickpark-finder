@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}Main Menu{% endblock %}
+
+{% block header %}
+<h1>Main Menu</h1>
+{% endblock %}
+
+{% block content %}
+    <p>Welcome to QuickPark Finder!</p>
+    <ul>
+        <li><a href="{{ url_for('parking') }}">Go to Parking</a></li>
+        <li><a href="{{ url_for('quickpark_list') }}">Search My QuickParks</a></li>
+    </ul>
+{% endblock %}

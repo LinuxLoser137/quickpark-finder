@@ -24,3 +24,7 @@ nav ul li a, nav ul li span, header .action { display: block; padding: 0.5rem; }
 .content textarea { min-height: 12em; resize: vertical; }
 input.danger { color: #cc2f2e; }
 input[type=submit] { align-self: start; min-width: 10em; }
+
+/* saved parking styles */
+.saved-parking { margin: 1em 0; padding: 1em; background: #eaf7ec; border: 1px solid #37a846; border-radius: 4px;}
+.saved-parking h2 { margin-top: 0; }
