@@ -1,0 +1,167 @@
+* {
+    box-sizing: border-box;
+}
+
+html {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+}
+
+body {
+    margin: 0;
+    color: #222222;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem 1.25rem;
+    background-color: #1f6feb;
+    color: #ffffff;
+}
+
+nav h1 {
+    margin: 0;
+    font-size: 1.25rem;
+}
+
+nav h1 a,
+nav a,
+nav span {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+nav ul {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.content {
+    max-width: 760px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.content > header h1,
+h2 {
+    text-align: center;
+}
+
+.intro {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: bold;
+}
+
+input,
+textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    font: inherit;
+}
+
+textarea {
+    resize: vertical;
+}
+
+button,
+input[type="submit"],
+.button-link {
+    display: inline-block;
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    background-color: #1f6feb;
+    color: #ffffff;
+    font-size: 16px;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+button:hover,
+input[type="submit"]:hover,
+.button-link:hover {
+    background-color: #195fc7;
+}
+
+.button-link.secondary {
+    background-color: #555555;
+}
+
+.menu-actions {
+    display: grid;
+    gap: 12px;
+}
+
+.flash {
+    margin-bottom: 20px;
+    padding: 12px;
+    border: 1px solid #377ba8;
+    border-radius: 5px;
+    background-color: #cae6f6;
+}
+
+.flash.error {
+    border-color: #b42318;
+    background-color: #fee4e2;
+    color: #912018;
+}
+
+.submitted-record,
+.quickpark-card {
+    margin-top: 24px;
+    padding: 20px;
+    border: 1px solid #2e7d32;
+    border-radius: 5px;
+    background-color: #e8f5e9;
+}
+
+.submitted-record p,
+.quickpark-card p {
+    margin: 10px 0;
+}
+
+.quickpark-list {
+    display: grid;
+    gap: 16px;
+}
+
+.timestamp {
+    color: #555555;
+    font-size: 0.9rem;
+}
+
+@media (max-width: 600px) {
+    nav {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .content {
+        margin: 20px 12px;
+        padding: 20px;
+    }
+}

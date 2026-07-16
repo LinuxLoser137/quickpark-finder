@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}Save Parking{% endblock %}
+
+{% block header %}
+<h1>Save Parking Information</h1>
+{% endblock %}
+
+{% block content %}
+<p class="intro">Enter your parking information so you can find your vehicle later.</p>
+
+{% if error %}
+    <div class="flash error">{{ error }}</div>
+{% endif %}
+
+<form method="post">
+    <div class="form-group">
+        <label for="location">Parking lot or garage</label>
+        <input
+            name="location"
+            id="location"
+            value="{{ request.form.get('location', '') }}"
+            placeholder="Example: North Garage"
+            required
+        >
+    </div>
+
+    <div class="form-group">
+        <label for="level">Floor or level</label>
+        <input
+            name="level"
+            id="level"
+            value="{{ request.form.get('level', '') }}"
+            placeholder="Example: Level 3"
+        >
+    </div>
+
+    <div class="form-group">
+        <label for="row">Row or space number</label>
+        <input
+            name="row"
+            id="row"
+            value="{{ request.form.get('row', '') }}"
+            placeholder="Example: Row B, Space 42"
+        >
+    </div>
+
+    <div class="form-group">
+        <label for="landmark">Nearby landmark</label>
+        <input
+            name="landmark"
+            id="landmark"
+            value="{{ request.form.get('landmark', '') }}"
+            placeholder="Example: Near elevator B"
+        >
+    </div>
+
+    <div class="form-group">
+        <label for="notes">Additional notes</label>
+        <textarea
+            name="notes"
+            id="notes"
+            rows="4"
+            placeholder="Add any helpful parking details"
+        >{{ request.form.get('notes', '') }}</textarea>
+    </div>
+
+    <button type="submit">Save Parking Information</button>
+</form>
+
+{% if parking_record %}
+    <section class="submitted-record">
+        <h2>Parking Information Saved</h2>
+        <p><strong>Parking lot or garage:</strong> {{ parking_record['location'] }}</p>
+        {% if parking_record['level'] %}
+            <p><strong>Floor or level:</strong> {{ parking_record['level'] }}</p>
+        {% endif %}
+        {% if parking_record['row'] %}
+            <p><strong>Row or space:</strong> {{ parking_record['row'] }}</p>
+        {% endif %}
+        {% if parking_record['landmark'] %}
+            <p><strong>Landmark:</strong> {{ parking_record['landmark'] }}</p>
+        {% endif %}
+        {% if parking_record['notes'] %}
+            <p><strong>Notes:</strong> {{ parking_record['notes'] }}</p>
+        {% endif %}
+    </section>
+{% endif %}
+{% endblock %}
