@@ -53,7 +53,7 @@ def create_app(test_config=None):
             elif len(notes) > 1000:
                 error = "Notes is too long."
             else:
-                db.execute(
+                cursor = db.execute(
                     """
                     INSERT INTO quickpark
                         (user_id, location, level, row, landmark, notes)
@@ -62,13 +62,10 @@ def create_app(test_config=None):
                     (g.user["id"], location, level, row, landmark, notes),
                 )
                 db.commit()
-                parking_record = {
-                    "location": location,
-                    "level": level,
-                    "row": row,
-                    "landmark": landmark,
-                    "notes": notes,
-                }
+                saved_row = db.execute(
+                    "SELECT * FROM quickpark WHERE id = ?", (cursor.lastrowid,)
+                ).fetchone()
+                parking_record = dict(saved_row)
 
         return render_template(
             "parking.html",

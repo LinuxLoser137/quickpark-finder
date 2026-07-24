@@ -26,3 +26,4 @@ def test_quickpark_limits_to_five_most_recent(client, login):
     assert response.data.count(b"Spot ") == 5
     assert b"Spot 6" in response.data
     assert b"Spot 0" not in response.data
+    assert  response.data.index(b"Spot 6") < response.data.index(b"Spot 2")

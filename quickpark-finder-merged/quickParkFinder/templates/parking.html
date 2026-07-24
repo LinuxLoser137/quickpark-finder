@@ -71,6 +71,7 @@
 {% if parking_record %}
     <section class="submitted-record">
         <h2>Parking Information Saved</h2>
+        <p><strong>Saved at:</strong> {{ parking_record['created'] }}</p>
         <p><strong>Parking lot or garage:</strong> {{ parking_record['location'] }}</p>
         {% if parking_record['level'] %}
             <p><strong>Floor or level:</strong> {{ parking_record['level'] }}</p>
