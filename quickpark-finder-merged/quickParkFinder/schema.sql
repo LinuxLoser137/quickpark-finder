@@ -15,6 +15,8 @@ CREATE TABLE quickpark (
     row TEXT,
     landmark TEXT,
     notes TEXT,
+    latitude TEXT,
+    longitude TEXT,
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES user (id)
 );

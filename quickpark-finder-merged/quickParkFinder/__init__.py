@@ -1,7 +1,8 @@
 import os
-from flask import Flask, redirect, render_template, request, url_for, g
+from flask import Flask, abort, redirect, render_template, request, url_for, g
 from .db import get_db
 from .auth import login_required
+from .crypto import encrypt_coordinate, decrypt_coordinate
 
 
 def create_app(test_config=None):
@@ -41,6 +42,20 @@ def create_app(test_config=None):
             row = request.form.get("row", "").strip()
             landmark = request.form.get("landmark", "").strip()
             notes = request.form.get("notes", "").strip()
+            latitude_raw = request.form.get("latitude", "").strip()
+            longitude_raw = request.form.get("longitude", "").strip()
+
+            latitude = None
+            longitude = None
+            coordinates_valid = True
+            if latitude_raw or longitude_raw:
+                try:
+                    latitude = float(latitude_raw)
+                    longitude = float(longitude_raw)
+                    if not (-90 <= latitude <= 90) or not (-180 <= longitude <= 180):
+                        coordinates_valid = False
+                except ValueError:
+                    coordinates_valid = False
 
             if not location:
                 error = "Location is required."
@@ -52,14 +67,20 @@ def create_app(test_config=None):
                 error = "Landmark is too long."
             elif len(notes) > 1000:
                 error = "Notes is too long."
+            elif not coordinates_valid:
+                error = "Invalid location coordinates."
             else:
                 cursor = db.execute(
                     """
                     INSERT INTO quickpark
-                        (user_id, location, level, row, landmark, notes)
-                    VALUES (?, ?, ?, ?, ?, ?)
+                        (user_id, location, level, row, landmark, notes, latitude, longitude)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                     """,
-                    (g.user["id"], location, level, row, landmark, notes),
+                    (
+                        g.user["id"], location, level, row, landmark, notes,
+                        encrypt_coordinate(latitude) if latitude is not None else None,
+                        encrypt_coordinate(longitude) if longitude is not None else None,
+                    ),
                 )
                 db.commit()
                 saved_row = db.execute(
@@ -88,6 +109,20 @@ def create_app(test_config=None):
             (g.user["id"],),
         ).fetchall()
         return render_template("quickparks.html", quickparks=quickparks)
+
+    @app.route("/quickpark/<int:quickpark_id>/directions")
+    @login_required
+    def get_directions(quickpark_id):
+        db = get_db()
+        row = db.execute(
+            "SELECT latitude, longitude FROM quickpark WHERE id = ? AND user_id = ?",
+            (quickpark_id, g.user["id"]),
+        ).fetchone()
+        if row is None or not row["latitude"] or not row["longitude"]:
+            abort(404)
+        lat = decrypt_coordinate(row["latitude"])
+        lng = decrypt_coordinate(row["longitude"])
+        return redirect(f"https://www.google.com/maps/dir/?api=1&destination={lat},{lng}")
 
     from . import db
     db.init_app(app)

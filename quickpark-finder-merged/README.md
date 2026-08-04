@@ -32,4 +32,4 @@ pytest
 
 ## Important security note
 
-Passwords are hashed using Werkzeug. Parking-location fields are stored in SQLite but are **not encrypted at rest** in this version.
+Passwords are hashed using Werkzeug. GPS coordinates are encrypted at rest (Fernet, key derived from `SECRET_KEY`) and only decrypted server-side when a user requests directions to their own spot. Other parking-location fields (location, level, row, landmark, notes) are stored in SQLite but are **not encrypted at rest**.

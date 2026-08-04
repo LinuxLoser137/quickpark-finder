@@ -27,3 +27,26 @@ def test_quickpark_limits_to_five_most_recent(client, login):
     assert b"Spot 6" in response.data
     assert b"Spot 0" not in response.data
     assert  response.data.index(b"Spot 6") < response.data.index(b"Spot 2")
+
+
+def test_quickpark_list_shows_directions_link_when_coordinates_saved(client, login):
+    login()
+    client.post(
+        "/parking/",
+        data={
+            "location": "Garage With Coords",
+            "level": "",
+            "row": "",
+            "notes": "",
+            "latitude": "37.7749",
+            "longitude": "-122.4194",
+        },
+    )
+    client.post(
+        "/parking/",
+        data={"location": "Garage Without Coords", "level": "", "row": "", "notes": ""},
+    )
+
+    response = client.get("/quickpark/")
+    assert response.data.count(b"Get Directions") == 1
+    assert b"37.7749" not in response.data

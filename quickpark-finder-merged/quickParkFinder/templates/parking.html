@@ -65,8 +65,17 @@
         >{{ request.form.get('notes', '') }}</textarea>
     </div>
 
+    <div class="form-group">
+        <button type="button" id="use-location-btn">📍 Use My Location</button>
+        <span id="location-status"></span>
+        <input type="hidden" name="latitude" id="latitude" value="{{ request.form.get('latitude', '') }}">
+        <input type="hidden" name="longitude" id="longitude" value="{{ request.form.get('longitude', '') }}">
+    </div>
+
     <button type="submit">Save Parking Information</button>
 </form>
+
+<script src="{{ url_for('static', filename='geolocation.js') }}" defer></script>
 
 {% if parking_record %}
     <section class="submitted-record">
@@ -84,6 +93,9 @@
         {% endif %}
         {% if parking_record['notes'] %}
             <p><strong>Notes:</strong> {{ parking_record['notes'] }}</p>
+        {% endif %}
+        {% if parking_record['latitude'] and parking_record['longitude'] %}
+            <p><a href="{{ url_for('get_directions', quickpark_id=parking_record['id']) }}" target="_blank" rel="noopener">Get Directions</a></p>
         {% endif %}
     </section>
 {% endif %}
