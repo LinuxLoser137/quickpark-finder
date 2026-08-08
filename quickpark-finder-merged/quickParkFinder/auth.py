@@ -40,7 +40,8 @@ def register():
             else:
                 return redirect(url_for("auth.login"))
 
-        flash(error)
+        if error is not None:
+            flash(error)
 
     return render_template("auth/register.html")
 
@@ -62,12 +63,13 @@ def login():
         elif not check_password_hash(user["password"], password):
             error = "Incorrect password."
 
-        if error is None:
+        if error is None and user is not None:
             session.clear()
             session["user_id"] = user["id"]
             return redirect(url_for("index"))
 
-        flash(error)
+        if error is not None:
+            flash(error)
 
     return render_template("auth/login.html")
 
