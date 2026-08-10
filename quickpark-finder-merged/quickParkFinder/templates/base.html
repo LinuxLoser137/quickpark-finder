@@ -1,15 +1,106 @@
-<main class="content">
-    <header>
-        {% block header %}{% endblock %}
-    </header>
+<!doctype html>
+<html lang="en">
 
-    {% for message in get_flashed_messages() %}
-        <div class="flash">{{ message }}</div>
-    {% endfor %}
+<head>
+    <meta charset="utf-8">
 
-    {% block content %}{% endblock %}
-</main>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
 
-{% if g.user %}
-<script src="{{ url_for('static', filename='inactivity.js') }}"></script>
-{% endif %}
+    <title>
+        {% block title %}QuickPark Finder{% endblock %}
+    </title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <nav>
+        <h1>
+            <a href="{{ url_for('hello') }}">
+                QuickPark Finder
+            </a>
+        </h1>
+
+        <ul>
+            {% if g.user %}
+
+                <li>
+                    <span>
+                        {{ g.user['username'] }}
+                    </span>
+                </li>
+
+                <li>
+                    <a href="{{ url_for('hello') }}">
+                        Home
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ url_for('parking') }}">
+                        Save Parking
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ url_for('quickpark_list') }}">
+                        My QuickParks
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ url_for('auth.logout') }}">
+                        Log Out
+                    </a>
+                </li>
+
+            {% else %}
+
+                <li>
+                    <a href="{{ url_for('auth.register') }}">
+                        Register
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ url_for('auth.login') }}">
+                        Log In
+                    </a>
+                </li>
+
+            {% endif %}
+        </ul>
+    </nav>
+
+
+    <main class="content">
+
+        <header>
+            {% block header %}{% endblock %}
+        </header>
+
+
+        {% for message in get_flashed_messages() %}
+            <div class="flash">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+
+        {% block content %}{% endblock %}
+
+    </main>
+
+
+    {% if g.user %}
+        <script
+            src="{{ url_for('static', filename='inactivity.js') }}">
+        </script>
+    {% endif %}
+
+</body>
+
+</html>
