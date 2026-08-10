@@ -7,13 +7,41 @@
 {% endblock %}
 
 {% block content %}
+
 <p class="intro">Welcome to QuickPark Finder.</p>
+
 {% if g.user %}
+
     <div class="menu-actions">
-        <a class="button-link" href="{{ url_for('parking') }}">Save Parking Information</a>
-        <a class="button-link secondary" href="{{ url_for('quickpark_list') }}">View My QuickParks</a>
+        <a class="button-link" href="{{ url_for('parking') }}">
+            Save Parking Information
+        </a>
+
+        <a class="button-link secondary" href="{{ url_for('quickpark_list') }}">
+            View My QuickParks
+        </a>
+
+        <a class="button-link secondary" href="{{ url_for('auth.logout') }}">
+            Log Out
+        </a>
     </div>
+
 {% else %}
-    <p class="intro">Register or log in to save and view your parking locations.</p>
+
+    <p class="intro">
+        Register or log in to save and view your parking locations.
+    </p>
+
+    <div class="menu-actions">
+        <a class="button-link" href="{{ url_for('auth.register') }}">
+            Register
+        </a>
+
+        <a class="button-link secondary" href="{{ url_for('auth.login') }}">
+            Log In
+        </a>
+    </div>
+
 {% endif %}
+
 {% endblock %}
