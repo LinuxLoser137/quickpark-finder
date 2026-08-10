@@ -89,10 +89,10 @@ textarea {
 button,
 input[type="submit"],
 .button-link {
-    display: inline-block;
+    display: block;
+    width: 100%;
     margin-top: 1rem;
     margin-bottom: 0.5rem;
-    width: 100%;
     padding: 12px;
     border: none;
     border-radius: 5px;
@@ -114,9 +114,14 @@ input[type="submit"]:hover,
     background-color: #555555;
 }
 
+.button-link.secondary:hover {
+    background-color: #444444;
+}
+
 .menu-actions {
     display: grid;
     gap: 12px;
+    margin-top: 20px;
 }
 
 .flash {
