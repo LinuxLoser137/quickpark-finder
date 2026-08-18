@@ -16,9 +16,22 @@
                 {% if qp['row'] %}<p><strong>Row:</strong> {{ qp['row'] }}</p>{% endif %}
                 {% if qp['landmark'] %}<p><strong>Landmark:</strong> {{ qp['landmark'] }}</p>{% endif %}
                 {% if qp['notes'] %}<p><strong>Notes:</strong> {{ qp['notes'] }}</p>{% endif %}
+
                 {% if qp['latitude'] and qp['longitude'] %}
-                    <p><a href="{{ url_for('get_directions', quickpark_id=qp['id']) }}" target="_blank" rel="noopener">Get Directions</a></p>
+                    <p>
+                        <a href="{{ url_for('get_directions', quickpark_id=qp['id']) }}"
+                           target="_blank"
+                           rel="noopener">
+                            Get Directions
+                        </a>
+                    </p>
                 {% endif %}
+
+                <form method="post"
+                      action="{{ url_for('clear_quickpark', quickpark_id=qp['id']) }}">
+                    <button type="submit">Clear Parking Session</button>
+                </form>
+
                 <p class="timestamp">{{ qp['created'] }}</p>
             </article>
         {% endfor %}
