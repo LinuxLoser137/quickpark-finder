@@ -167,6 +167,35 @@ def create_app(test_config=None):
             quickparks=quickparks,
         )
 
+    @app.route("/quickpark/<int:quickpark_id>/clear", methods=("POST",))
+    @login_required
+    def clear_quickpark(quickpark_id):
+        db = get_db()
+
+        quickpark = db.execute(
+            """
+            SELECT id
+            FROM quickpark
+            WHERE id = ? AND user_id = ?
+            """,
+            (quickpark_id, g.user["id"]),
+        ).fetchone()
+
+        if quickpark is None:
+            abort(404)
+
+        db.execute(
+            """
+            DELETE FROM quickpark
+            WHERE id = ? AND user_id = ?
+            """,
+            (quickpark_id, g.user["id"]),
+        )
+
+        db.commit()
+
+        return redirect(url_for("quickpark_list"))
+
     @app.route("/quickpark/<int:quickpark_id>/directions")
     @login_required
     def get_directions(quickpark_id):
