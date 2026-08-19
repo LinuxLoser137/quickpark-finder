@@ -19,3 +19,11 @@ def encrypt_coordinate(value):
 
 def decrypt_coordinate(token):
     return float(_fernet().decrypt(token.encode()).decode())
+
+
+def encrypt_bytes(data):
+    return _fernet().encrypt(data)
+
+
+def decrypt_bytes(token):
+    return _fernet().decrypt(token)

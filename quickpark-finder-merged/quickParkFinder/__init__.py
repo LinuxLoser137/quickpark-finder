@@ -3,6 +3,7 @@ from datetime import timedelta
 
 from flask import (
     Flask,
+    Response,
     abort,
     g,
     redirect,
@@ -12,8 +13,11 @@ from flask import (
 )
 
 from .auth import login_required
-from .crypto import decrypt_coordinate, encrypt_coordinate
+from .crypto import decrypt_bytes, decrypt_coordinate, encrypt_bytes, encrypt_coordinate
 from .db import get_db
+
+ALLOWED_PHOTO_MIMETYPES = {"image/jpeg", "image/png", "image/gif", "image/webp"}
+MAX_PHOTO_BYTES = 5 * 1024 * 1024
 
 
 def create_app(test_config=None):
@@ -22,7 +26,8 @@ def create_app(test_config=None):
     app.config.from_mapping(
         SECRET_KEY="dev",
         DATABASE=os.path.join(app.instance_path, "quickParkFinder.sqlite"),
-        MAX_CONTENT_LENGTH=64 * 1024,
+        # 5MB photo upload + headroom for multipart overhead and other fields.
+        MAX_CONTENT_LENGTH=6 * 1024 * 1024,
         SESSION_COOKIE_SAMESITE="Lax",
 
         # Automatically expire a permanent login session after 15 minutes.
@@ -63,6 +68,20 @@ def create_app(test_config=None):
             latitude_raw = request.form.get("latitude", "").strip()
             longitude_raw = request.form.get("longitude", "").strip()
 
+            photo_file = request.files.get("photo")
+            photo_bytes = None
+            photo_mimetype = None
+            photo_valid = True
+
+            if photo_file and photo_file.filename:
+                photo_mimetype = photo_file.mimetype
+                photo_bytes = photo_file.read()
+
+                if photo_mimetype not in ALLOWED_PHOTO_MIMETYPES:
+                    photo_valid = False
+                elif len(photo_bytes) > MAX_PHOTO_BYTES:
+                    photo_valid = False
+
             latitude = None
             longitude = None
             coordinates_valid = True
@@ -99,6 +118,9 @@ def create_app(test_config=None):
             elif not coordinates_valid:
                 error = "Invalid location coordinates."
 
+            elif not photo_valid:
+                error = "Photo must be a JPEG, PNG, GIF, or WEBP image under 5MB."
+
             else:
                 cursor = db.execute(
                     """
@@ -111,9 +133,11 @@ def create_app(test_config=None):
                             landmark,
                             notes,
                             latitude,
-                            longitude
+                            longitude,
+                            photo,
+                            photo_mimetype
                         )
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     (
                         g.user["id"],
@@ -128,6 +152,8 @@ def create_app(test_config=None):
                         encrypt_coordinate(longitude)
                         if longitude is not None
                         else None,
+                        encrypt_bytes(photo_bytes) if photo_bytes else None,
+                        photo_mimetype if photo_bytes else None,
                     ),
                 )
 
@@ -220,6 +246,31 @@ def create_app(test_config=None):
             f"https://www.google.com/maps/dir/"
             f"?api=1&destination={lat},{lng}"
         )
+
+    @app.route("/quickpark/<int:quickpark_id>/photo")
+    @login_required
+    def get_photo(quickpark_id):
+        db = get_db()
+
+        row = db.execute(
+            """
+            SELECT photo, photo_mimetype
+            FROM quickpark
+            WHERE id = ? AND user_id = ?
+            """,
+            (quickpark_id, g.user["id"]),
+        ).fetchone()
+
+        if row is None or not row["photo"]:
+            abort(404)
+
+        response = Response(
+            decrypt_bytes(row["photo"]),
+            mimetype=row["photo_mimetype"],
+        )
+        response.headers["Cache-Control"] = "no-store"
+
+        return response
 
     from . import db
 

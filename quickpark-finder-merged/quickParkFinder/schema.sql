@@ -17,6 +17,8 @@ CREATE TABLE quickpark (
     notes TEXT,
     latitude TEXT,
     longitude TEXT,
+    photo BLOB,
+    photo_mimetype TEXT,
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES user (id)
 );

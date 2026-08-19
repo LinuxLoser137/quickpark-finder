@@ -16,6 +16,17 @@
                 {% if qp['row'] %}<p><strong>Row:</strong> {{ qp['row'] }}</p>{% endif %}
                 {% if qp['landmark'] %}<p><strong>Landmark:</strong> {{ qp['landmark'] }}</p>{% endif %}
                 {% if qp['notes'] %}<p><strong>Notes:</strong> {{ qp['notes'] }}</p>{% endif %}
+                {% if qp['photo'] %}
+                    <a href="{{ url_for('get_photo', quickpark_id=qp['id']) }}"
+                       target="_blank"
+                       rel="noopener">
+                        <img
+                            class="quickpark-photo"
+                            src="{{ url_for('get_photo', quickpark_id=qp['id']) }}"
+                            alt="Photo of parking spot at {{ qp['location'] }}"
+                        >
+                    </a>
+                {% endif %}
 
                 {% if qp['latitude'] and qp['longitude'] %}
                     <p>

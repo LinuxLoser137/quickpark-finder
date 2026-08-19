@@ -13,7 +13,7 @@
     <div class="flash error">{{ error }}</div>
 {% endif %}
 
-<form method="post">
+<form method="post" enctype="multipart/form-data">
     <div class="form-group">
         <label for="location">Parking lot or garage</label>
         <input
@@ -66,6 +66,11 @@
     </div>
 
     <div class="form-group">
+        <label for="photo">Photo of your parking spot (optional)</label>
+        <input type="file" name="photo" id="photo" accept="image/*">
+    </div>
+
+    <div class="form-group">
         <button type="button" id="use-location-btn">📍 Use My Location</button>
         <span id="location-status"></span>
         <input type="hidden" name="latitude" id="latitude" value="{{ request.form.get('latitude', '') }}">
@@ -93,6 +98,15 @@
         {% endif %}
         {% if parking_record['notes'] %}
             <p><strong>Notes:</strong> {{ parking_record['notes'] }}</p>
+        {% endif %}
+        {% if parking_record['photo'] %}
+            <a href="{{ url_for('get_photo', quickpark_id=parking_record['id']) }}" target="_blank" rel="noopener">
+                <img
+                    class="quickpark-photo"
+                    src="{{ url_for('get_photo', quickpark_id=parking_record['id']) }}"
+                    alt="Photo of parking spot at {{ parking_record['location'] }}"
+                >
+            </a>
         {% endif %}
         {% if parking_record['latitude'] and parking_record['longitude'] %}
             <p><a href="{{ url_for('get_directions', quickpark_id=parking_record['id']) }}" target="_blank" rel="noopener">Get Directions</a></p>
