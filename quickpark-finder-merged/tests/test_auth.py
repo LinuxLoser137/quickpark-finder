@@ -78,7 +78,7 @@ def test_login_rejects_unknown_username(client):
     response = client.post(
         "/auth/login/", data={"username": "ghost", "password": "whatever1"}
     )
-    assert b"Incorrect username." in response.data
+    assert b"Incorrect username or password." in response.data
 
 
 def test_login_rejects_wrong_password(client, register):
@@ -86,7 +86,7 @@ def test_login_rejects_wrong_password(client, register):
     response = client.post(
         "/auth/login/", data={"username": "dave", "password": "wrong-horse"}
     )
-    assert b"Incorrect password." in response.data
+    assert b"Incorrect username or password." in response.data
 
 def test_logout_clears_session(client, login):
     login()

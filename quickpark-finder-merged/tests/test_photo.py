@@ -3,9 +3,10 @@ import io
 from quickParkFinder.db import get_db
 
 FAKE_JPEG_BYTES = b"fake-jpeg-bytes-not-a-real-image"
+REAL_JPEG_BYTES = b"\xff\xd8\xff" + b"fake-body-behind-a-real-jpeg-header"
 
 
-def _photo_file(data=FAKE_JPEG_BYTES, filename="spot.jpg", content_type="image/jpeg"):
+def _photo_file(data=REAL_JPEG_BYTES, filename="spot.jpg", content_type="image/jpeg"):
     return (io.BytesIO(data), filename, content_type)
 
 
@@ -67,9 +68,28 @@ def test_parking_rejects_disallowed_photo_type(client, login):
     assert b"Saved at:" not in response.data
 
 
+def test_parking_rejects_mislabeled_non_image_bytes(client, login):
+    login()
+    response = client.post(
+        "/parking/",
+        data={
+            "location": "Garage Q",
+            "level": "",
+            "row": "",
+            "notes": "",
+            "photo": _photo_file(data=FAKE_JPEG_BYTES),
+        },
+        content_type="multipart/form-data",
+        follow_redirects=True,
+    )
+
+    assert b"Photo must be a JPEG, PNG, GIF, or WEBP image under 5MB." in response.data
+    assert b"Saved at:" not in response.data
+
+
 def test_parking_rejects_oversized_photo(client, login):
     login()
-    oversized = b"x" * (5 * 1024 * 1024 + 1)
+    oversized = b"\xff\xd8\xff" + b"x" * (5 * 1024 * 1024 + 1)
     response = client.post(
         "/parking/",
         data={
@@ -108,7 +128,7 @@ def test_photo_is_encrypted_at_rest(client, login, app):
         ).fetchone()
 
     assert row["photo"] is not None
-    assert FAKE_JPEG_BYTES not in row["photo"]
+    assert REAL_JPEG_BYTES not in row["photo"]
     assert row["photo_mimetype"] == "image/jpeg"
 
 
@@ -128,7 +148,7 @@ def test_photo_route_returns_decrypted_photo_to_owner(client, login):
 
     response = client.get("/quickpark/1/photo")
     assert response.status_code == 200
-    assert response.data == FAKE_JPEG_BYTES
+    assert response.data == REAL_JPEG_BYTES
     assert response.mimetype == "image/jpeg"
 
 

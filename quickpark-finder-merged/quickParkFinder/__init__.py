@@ -16,8 +16,20 @@ from .auth import login_required
 from .crypto import decrypt_bytes, decrypt_coordinate, encrypt_bytes, encrypt_coordinate
 from .db import get_db
 
-ALLOWED_PHOTO_MIMETYPES = {"image/jpeg", "image/png", "image/gif", "image/webp"}
 MAX_PHOTO_BYTES = 5 * 1024 * 1024
+
+
+def sniff_photo_mimetype(data):
+    """Derive the real image type from file bytes, ignoring the client-supplied Content-Type."""
+    if data.startswith(b"\xff\xd8\xff"):
+        return "image/jpeg"
+    if data.startswith(b"\x89PNG\r\n\x1a\n"):
+        return "image/png"
+    if data[:6] in (b"GIF87a", b"GIF89a"):
+        return "image/gif"
+    if data[:4] == b"RIFF" and data[8:12] == b"WEBP":
+        return "image/webp"
+    return None
 
 
 def create_app(test_config=None):
@@ -74,10 +86,10 @@ def create_app(test_config=None):
             photo_valid = True
 
             if photo_file and photo_file.filename:
-                photo_mimetype = photo_file.mimetype
                 photo_bytes = photo_file.read()
+                photo_mimetype = sniff_photo_mimetype(photo_bytes)
 
-                if photo_mimetype not in ALLOWED_PHOTO_MIMETYPES:
+                if photo_mimetype is None:
                     photo_valid = False
                 elif len(photo_bytes) > MAX_PHOTO_BYTES:
                     photo_valid = False
